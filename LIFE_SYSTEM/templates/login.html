@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block page_class %}page-login{% endblock %}
+{% block title %}Login - LIFE SYSTEM{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>LIFE SYSTEM</h1>
+            <p>Anime Productivity Tracker</p>
+        </div>
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="Enter your email"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-field">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                    <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                        <span class="eye-icon">👁️</span>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="/register">Register here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

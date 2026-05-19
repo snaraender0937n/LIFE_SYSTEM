@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block page_class %}page-edit{% endblock %}
+{% block title %}Edit Plan - LIFE SYSTEM{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h1>Edit Plan</h1>
+            <p>Update a complex task and its sub-steps</p>
+        </div>
+        {% if error %}<div class="error-message">{{ error }}</div>{% endif %}
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="activity">Activity *</label>
+                <input type="text" id="activity" name="activity" value="{{ plan['activity'] }}" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="2">{{ plan['description'] or '' }}</textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="planned_start">Start</label>
+                    <input type="time" id="planned_start" name="planned_start" value="{{ plan['planned_start'] }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="planned_end">End</label>
+                    <input type="time" id="planned_end" name="planned_end" value="{{ plan['planned_end'] }}" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="priority">Priority</label>
+                    <select id="priority" name="priority">
+                        <option value="low" {% if plan['priority']=='low' %}selected{% endif %}>Low</option>
+                        <option value="medium" {% if plan['priority']=='medium' %}selected{% endif %}>Medium</option>
+                        <option value="high" {% if plan['priority']=='high' %}selected{% endif %}>High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="difficulty">Difficulty (1-5)</label>
+                    <input type="number" id="difficulty" name="difficulty" min="1" max="5" value="{{ plan['difficulty'] or 3 }}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="subtasks">Subtasks (one per line)</label>
+                <textarea id="subtasks" name="subtasks" rows="4">{{ subtasks_text }}</textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
