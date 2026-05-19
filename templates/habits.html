@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block page_class %}page-habits{% endblock %}
+{% block title %}Habits - LIFE SYSTEM{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <nav class="nav-pills">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/goals">Goals</a>
+        <a href="/habits" class="active">Habits</a>
+        <a href="/challenges">Challenges</a>
+    </nav>
+
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1>Habit Tracker</h1>
+            <p class="today-date">Build recurring routines — {{ today }}</p>
+        </div>
+        <a href="/dashboard" class="btn btn-small btn-secondary">Back</a>
+    </div>
+
+    <div class="section-card">
+        <div class="section-header"><h2>New Habit</h2></div>
+        {% if error %}<div class="error-message">{{ error }}</div>{% endif %}
+        <form method="POST" class="auth-form">
+            <input type="hidden" name="action" value="create">
+            <div class="form-group">
+                <label for="name">Habit name *</label>
+                <input type="text" id="name" name="name" placeholder="e.g. Read 30 min, Morning workout" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Notes</label>
+                <textarea id="description" name="description" rows="2"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="frequency">Frequency</label>
+                    <select id="frequency" name="frequency">
+                        <option value="daily">Daily</option>
+                        <option value="weekdays">Weekdays only</option>
+                        <option value="weekly">Weekly target</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="target_per_week">Target / week</label>
+                    <input type="number" id="target_per_week" name="target_per_week" min="1" max="14" value="7">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Habit</button>
+        </form>
+    </div>
+
+    <div class="section-card">
+        <div class="section-header"><h2>Today's Habits</h2></div>
+        {% if habits %}
+            {% for habit in habits %}
+                <div class="habit-item">
+                    <div class="habit-info">
+                        <h3>{{ habit['name'] }}</h3>
+                        <p>{{ habit['description'] or habit['frequency'] }} &bull; Streak: {{ habit['current_streak'] }} (best {{ habit['longest_streak'] }})</p>
+                    </div>
+                    <form method="POST" action="/habits/{{ habit['id'] }}/checkin">
+                        <button type="submit" class="btn btn-small {% if habit['id'] in done_today %}btn-secondary{% else %}btn-add{% endif %}">
+                            {% if habit['id'] in done_today %}Done today{% else %}Check in{% endif %}
+                        </button>
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No habits yet. Add a recurring routine above.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,417 @@
+{% extends "base.html" %}
+
+{% block page_class %}page-dashboard{% endblock %}
+{% block title %}Dashboard - LIFE SYSTEM{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <nav class="nav-pills">
+        <a href="/dashboard" class="active">Dashboard</a>
+        <a href="/goals">Goals</a>
+        <a href="/habits">Habits</a>
+        <a href="/challenges">Challenges</a>
+        <a href="/analytics">Analytics</a>
+        <a href="/add_plan">+ Plan</a>
+    </nav>
+    <!-- Header with Streak -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1>LIFE SYSTEM Dashboard</h1>
+            <p class="today-date">{{ today }}</p>
+        </div>
+        <div class="header-stats">
+            {% if streak %}
+                <div class="streak-badge">
+                    <span class="streak-flame">🔥</span>
+                    <span>{{ streak['current_streak'] }} day streak</span>
+                </div>
+            {% endif %}
+            <div class="completion-badge">
+                <span>✅</span>
+                {% if stats %}
+                    <span>{{ stats['completion_rate'] | round(0) }}% Complete</span>
+                {% else %}
+                    <span>0% Complete</span>
+                {% endif %}
+            </div>
+            {% if total_xp %}
+            <div class="completion-badge">
+                <span class="xp-badge">{{ total_xp }} XP</span>
+            </div>
+            {% endif %}
+        </div>
+        <div class="header-actions">
+            <a href="/analytics" class="btn btn-small btn-info">📊 Analytics</a>
+            <a href="/profile" class="btn btn-small btn-info">👤 Profile</a>
+            <a href="/logout" class="btn btn-logout">Logout</a>
+        </div>
+    </div>
+
+    {% if active_goals or habits or challenges %}
+    <div class="dashboard-grid dashboard-grid-triple">
+        {% if active_goals %}
+        <div class="section-card">
+            <div class="section-header">
+                <h2>🎯 Active Goals</h2>
+                <a href="/goals" class="btn btn-small">View all</a>
+            </div>
+            {% for goal in active_goals %}
+            <div class="goal-item">
+                <h3>{{ goal['title'] }}</h3>
+                <div class="progress-track"><div class="progress-track-fill" style="width: {{ goal['progress'] }}%"></div></div>
+                <span>{{ goal['progress'] | round(0) }}%</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if habits %}
+        <div class="section-card">
+            <div class="section-header">
+                <h2>🔄 Habits Today</h2>
+                <a href="/habits" class="btn btn-small">Manage</a>
+            </div>
+            {% for habit in habits[:4] %}
+            <div class="habit-item">
+                <span>{{ habit['name'] }}</span>
+                <form method="POST" action="/habits/{{ habit['id'] }}/checkin">
+                    <button type="submit" class="btn btn-small {% if habit['id'] in habit_done_today %}btn-secondary{% else %}btn-add{% endif %}">
+                        {% if habit['id'] in habit_done_today %}Done{% else %}Check in{% endif %}
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if challenges %}
+        <div class="section-card">
+            <div class="section-header">
+                <h2>⚔️ Weekly Challenges</h2>
+                <a href="/challenges" class="btn btn-small">Details</a>
+            </div>
+            {% for ch in challenges[:3] %}
+            <div class="challenge-item">
+                <strong>{{ ch['title'] }}</strong>
+                <div class="progress-track">
+                    {% set cp = (ch['current_value'] / ch['target_value'] * 100) if ch['target_value'] else 0 %}
+                    <div class="progress-track-fill" style="width: {{ [cp, 100] | min }}%"></div>
+                </div>
+                <small>{{ ch['current_value'] }}/{{ ch['target_value'] }}{% if ch['status']=='completed' %} — Done!{% endif %}</small>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <div class="dashboard-grid">
+        <!-- Today's Plan Section -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2>📋 Today's Plan</h2>
+                <a href="/add_plan" class="btn btn-small btn-add">+ Add Plan</a>
+            </div>
+
+            <div class="plans-list">
+                {% if plans %}
+                    {% for plan in plans %}
+                        <div class="plan-item priority-{{ plan['priority'] }}">
+                            <div class="plan-badge">{{ plan['priority'] | upper }}</div>
+                            <div class="plan-content">
+                                <h3>{{ plan['activity'] }}</h3>
+                                <div class="plan-category">
+                                    {{ plan['category'] }}
+                                    <span class="difficulty-stars">{% for i in range(plan['difficulty'] or 3) %}★{% endfor %}</span>
+                                    {% if plan['energy_level'] %} &bull; {{ plan['energy_level'] }} energy{% endif %}
+                                </div>
+                                {% if plan['description'] %}<p class="plan-desc">{{ plan['description'] }}</p>{% endif %}
+                                {% if plan['subtasks'] %}
+                                <ul class="subtask-list">
+                                    {% for st in plan['subtasks'] %}
+                                    <li class="{% if st['completed'] %}done{% endif %}">
+                                        <form method="POST" action="/toggle_subtask/{{ st['id'] }}" style="display:inline">
+                                            <button type="submit" class="btn-delete" style="margin-right:6px;">{% if st['completed'] %}✓{% else %}○{% endif %}</button>
+                                        </form>
+                                        {{ st['title'] }}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                                <a href="/edit_plan/{{ plan['id'] }}" class="btn btn-small" style="margin-top:8px;">Edit</a>
+                                <div class="plan-time">
+                                    <span class="time-badge start">🕐 {{ plan['planned_start'] }}</span>
+                                    <span class="time-separator">→</span>
+                                    <span class="time-badge end">🕐 {{ plan['planned_end'] }}</span>
+                                </div>
+                                <form method="POST" action="/delete_plan/{{ plan['id'] }}" class="item-delete-form" onsubmit="return confirm('Delete this plan?');">
+                                    <button type="submit" class="btn-delete" title="Delete plan">✕</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <p>No plans for today yet.</p>
+                        <a href="/add_plan" class="btn btn-small btn-primary">Create your first plan</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Today's Actual Section -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2>✅ Today's Actual</h2>
+                <a href="/update_actual" class="btn btn-small btn-add">+ Log Activity</a>
+            </div>
+
+            <div class="actuals-list">
+                {% if actuals %}
+                    {% for actual in actuals %}
+                        <div class="actual-item status-{{ actual['status'] }}">
+                            <div class="actual-content">
+                                <div class="actual-header">
+                                    <h3>{{ actual['activity'] }}</h3>
+                                    <span class="status-badge">{{ actual['status'] | upper }}</span>
+                                </div>
+                                <div class="actual-category">{{ actual['category'] }}</div>
+                                <div class="actual-time">
+                                    <span class="time-badge start">🕐 {{ actual['actual_start'] }}</span>
+                                    <span class="time-separator">→</span>
+                                    <span class="time-badge end">🕐 {{ actual['actual_end'] }}</span>
+                                </div>
+                                {% if actual['notes'] %}
+                                    <p class="actual-notes">📝 {{ actual['notes'] }}</p>
+                                {% endif %}
+                                <div class="efficiency-score">
+                                    Efficiency: <span class="score">{{ actual['efficiency_score'] }}%</span>
+                                </div>
+                                <form method="POST" action="/delete_actual/{{ actual['id'] }}" class="item-delete-form" onsubmit="return confirm('Delete this activity log?');">
+                                    <button type="submit" class="btn-delete" title="Delete activity">✕</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <p>No activities logged yet.</p>
+                        <a href="/update_actual" class="btn btn-small btn-primary">Log your first activity</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Weekly Summary -->
+    {% if weekly_stats %}
+    <div class="section-card">
+        <div class="section-header">
+            <h2>📊 Weekly Summary</h2>
+        </div>
+        <div class="weekly-stats">
+            <div class="stat-box">
+                <div class="stat-icon">📋</div>
+                <div class="stat-value">{{ weekly_stats['week_planned'] or 0 }}</div>
+                <div class="stat-label">Tasks Planned</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value">{{ weekly_stats['week_completed'] or 0 }}</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">📈</div>
+                <div class="stat-value">{{ "%.0f"|format(weekly_stats['avg_completion'] or 0) }}%</div>
+                <div class="stat-label">Avg. Completion</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.header-stats {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.streak-badge {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(249, 115, 22, 0.2));
+    border: 2px solid rgba(239, 68, 68, 0.3);
+    color: #dc2626;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.completion-badge {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.2));
+    border: 2px solid rgba(16, 185, 129, 0.3);
+    color: var(--success);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.streak-flame {
+    font-size: 1.2rem;
+    animation: flame 1s ease-in-out infinite;
+}
+
+@keyframes flame {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.plan-item, .actual-item {
+    position: relative;
+}
+
+.plan-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(99, 102, 241, 0.2);
+    color: var(--primary);
+}
+
+.plan-item.priority-high .plan-badge {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+.plan-item.priority-low .plan-badge {
+    background: rgba(99, 102, 241, 0.2);
+    color: var(--primary);
+}
+
+.plan-category, .actual-category {
+    font-size: 0.8rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.efficiency-score {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.efficiency-score .score {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-info:hover {
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.weekly-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.stat-box {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.stat-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.dashboard-grid-triple {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    margin-bottom: 25px;
+}
+
+.habit-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.goal-item, .challenge-item {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.plan-desc {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin: 6px 0;
+}
+
+.item-delete-form {
+    margin-top: 10px;
+    text-align: right;
+}
+
+.btn-delete {
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: var(--danger);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-delete:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+@media (max-width: 768px) {
+    .header-stats {
+        width: 100%;
+    }
+    
+    .header-actions {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

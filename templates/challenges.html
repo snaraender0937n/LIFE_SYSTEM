@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block page_class %}page-challenges{% endblock %}
+{% block title %}Challenges - LIFE SYSTEM{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <nav class="nav-pills">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/goals">Goals</a>
+        <a href="/habits">Habits</a>
+        <a href="/challenges" class="active">Challenges</a>
+    </nav>
+
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1>Weekly Challenges</h1>
+            <p class="today-date">Week of {{ week_start }} &bull; <span class="xp-badge">{{ total_xp }} XP earned</span></p>
+        </div>
+        <a href="/dashboard" class="btn btn-small btn-secondary">Back</a>
+    </div>
+
+    <div class="section-card">
+        {% if challenges %}
+            {% for ch in challenges %}
+                <div class="challenge-item">
+                    <div class="challenge-top">
+                        <h3>{{ ch['title'] }}</h3>
+                        <span class="xp-badge">+{{ ch['xp_reward'] }} XP</span>
+                    </div>
+                    <p>{{ ch['description'] }}</p>
+                    <p class="challenge-meta">Difficulty: {{ ch['difficulty'] | capitalize }} &bull; {{ ch['status'] | upper }}</p>
+                    <div class="progress-track">
+                        {% set pct = (ch['current_value'] / ch['target_value'] * 100) if ch['target_value'] > 0 else 0 %}
+                        <div class="progress-track-fill" style="width: {{ [pct, 100] | min }}%"></div>
+                    </div>
+                    <p>{{ ch['current_value'] }} / {{ ch['target_value'] }} progress</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No challenges this week. Visit the dashboard to generate them.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
