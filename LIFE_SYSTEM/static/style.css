@@ -1,0 +1,463 @@
+/* ================= RESET ================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, sans-serif;
+}
+
+
+/* ================= LOGIN PAGE ================= */
+
+body.login-page{
+
+    background:url("/static/login.jpg") no-repeat center center fixed;
+
+    background-size:cover;
+
+    height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    position:relative;
+}
+
+body.login-page::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:rgba(0,0,0,0.35);
+
+    z-index:1;
+}
+
+
+/* ================= REGISTER PAGE ================= */
+
+body.register-page{
+
+    background:url("/static/register.jpg") no-repeat center center fixed;
+
+    background-size:cover;
+
+    height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    position:relative;
+}
+
+body.register-page::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:rgba(0,0,0,0.35);
+
+    z-index:1;
+}
+
+
+/* ================= CONTAINER ================= */
+
+.container{
+
+    position:relative;
+
+    z-index:5;
+
+    width:340px;
+
+    padding:30px;
+
+    border-radius:18px;
+
+    background:rgba(20,20,20,0.45);
+
+    backdrop-filter:blur(10px);
+
+    text-align:center;
+
+    color:white;
+
+    box-shadow:0 0 25px rgba(0,0,0,0.5);
+}
+
+
+/* ================= HEADINGS ================= */
+
+.container h1{
+
+    font-size:48px;
+
+    margin-bottom:5px;
+
+    color:white;
+
+    text-shadow:0 0 15px rgba(0,0,0,0.8);
+}
+
+.container h2{
+
+    font-size:20px;
+
+    margin-bottom:25px;
+
+    color:#f1f1f1;
+}
+
+
+/* ================= INPUTS ================= */
+
+input,
+textarea,
+select{
+
+    width:100%;
+
+    padding:12px;
+
+    margin-bottom:15px;
+
+    border:none;
+
+    border-radius:8px;
+
+    outline:none;
+
+    font-size:14px;
+}
+
+
+/* ================= PASSWORD BOX ================= */
+
+.password-box{
+
+    position: relative;
+
+    width: 100%;
+}
+
+.password-box input{
+
+    width:100%;
+
+    padding-right:85px;
+
+    box-sizing:border-box;
+}
+
+.password-box .show-toggle{
+
+    position:absolute;
+
+    right:14px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:6px 8px;
+
+    color:#222;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    line-height:1;
+
+    cursor:pointer;
+
+    user-select:none;
+
+    background:transparent;
+
+    border-radius:6px;
+
+}
+
+/* ================= BUTTONS ================= */
+
+button{
+
+    width:100%;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:8px;
+
+    background:#22c55e;
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:0.2s;
+}
+
+button:hover{
+
+    background:#16a34a;
+
+    transform:scale(1.03);
+}
+
+
+/* ================= LINKS ================= */
+
+a{
+
+    color:#60a5fa;
+
+    text-decoration:none;
+}
+
+a:hover{
+
+    text-decoration:underline;
+}
+
+
+/* ================= ERROR ================= */
+
+.error{
+
+    background:rgba(255,0,0,0.2);
+
+    color:#ff7b7b;
+
+    padding:10px;
+
+    border-radius:8px;
+
+    margin-bottom:15px;
+}
+
+
+/* ================= DASHBOARD PAGE ================= */
+
+body.dashboard-page{
+
+    background:url("/static/dashboard.jpg") no-repeat center center fixed;
+
+    background-size:cover;
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    position:relative;
+}
+
+
+/* ================= OVERLAY ================= */
+
+.overlay{
+
+    position:absolute;
+
+    width:100%;
+
+    height:100%;
+
+    background:rgba(0,0,0,0.60);
+
+    z-index:1;
+}
+
+
+/* ================= DASHBOARD CONTAINER ================= */
+
+.dashboard-container{
+
+    position:relative;
+
+    z-index:2;
+
+    width:90%;
+
+    max-width:1100px;
+}
+
+
+/* ================= DASHBOARD TOP ================= */
+
+.dashboard-top{
+
+    color:white;
+
+    margin-bottom:30px;
+}
+
+.dashboard-top h1{
+
+    font-size:42px;
+
+    color:white;
+
+    font-weight:800;
+
+    text-shadow:0px 0px 15px rgba(0,0,0,0.8);
+}
+
+.dashboard-top p{
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:600;
+
+    text-shadow:0px 0px 10px rgba(0,0,0,0.8);
+}
+
+
+/* ================= DASHBOARD GRID ================= */
+
+.dashboard-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:25px;
+}
+
+
+/* ================= DASHBOARD CARDS ================= */
+
+.dashboard-card{
+
+    background:rgba(15,15,15,0.70);
+
+    border-radius:20px;
+
+    padding:30px;
+
+    backdrop-filter:blur(10px);
+
+    box-shadow:0 0 25px rgba(0,0,0,0.4);
+
+    transition:0.3s;
+}
+
+.dashboard-card:hover{
+
+    transform:translateY(-5px);
+
+    background:rgba(20,20,20,0.80);
+}
+
+
+/* ================= DASHBOARD TEXT ================= */
+
+.dashboard-card h2{
+
+    color:#ffffff;
+
+    font-size:32px;
+
+    margin-bottom:15px;
+
+    font-weight:bold;
+
+    text-shadow:0 0 10px rgba(0,0,0,0.8);
+}
+
+.dashboard-card p{
+
+    color:#ffffff;
+
+    font-size:17px;
+
+    line-height:1.6;
+
+    margin-bottom:20px;
+
+    text-shadow:0 0 10px rgba(0,0,0,0.8);
+}
+
+
+/* ================= BUTTON COLORS ================= */
+
+.add-btn{
+
+    background:#22c55e;
+}
+
+.add-btn:hover{
+
+    background:#16a34a;
+}
+
+.update-btn{
+
+    background:#3b82f6;
+}
+
+.update-btn:hover{
+
+    background:#2563eb;
+}
+
+.logout-btn{
+
+    background:crimson;
+}
+
+.logout-btn:hover{
+
+    background:darkred;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:900px){
+
+    .dashboard-grid{
+
+        grid-template-columns:1fr;
+    }
+
+    .dashboard-top h1{
+
+        font-size:42px;
+    }
+}
